@@ -29,7 +29,7 @@ The application:
 
 No installation required! Simply:
 1. Download all files to a folder
-2. Open `rotsono.html` in your web browser
+2. Open `index.html` in your web browser
 3. Enter your GW2 API key and click "Fetch Data"
 
 ## API Key Requirements
