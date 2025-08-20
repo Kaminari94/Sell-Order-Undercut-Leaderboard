@@ -1,6 +1,6 @@
 # Kaminari's Sell Offer Undercut Leaderboard
 
-A lightweight web application for Guild Wars 2 traders which puts the emphasis and analyzes sell orders, identifying undercut competition in the trading post.
+A lightweight web application for Guild Wars 2 traders which analyzes sell orders, identifying undercut competition in the trading post.
 
 ![GW2 Trading](https://img.shields.io/badge/Guild%20Wars%202-Trading%20Post-blue)
 ![jQuery](https://img.shields.io/badge/jQuery-3.7.1-green)
