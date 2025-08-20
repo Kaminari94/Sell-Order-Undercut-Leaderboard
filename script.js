@@ -186,7 +186,7 @@ async function processBananas(transactions) {
 	
 	for (const chunk of chunks) {
 		try {
-			const response = await fetch(`https://api.guildwars2.com/v2${endpoint}?ids=${chunk.join(',')}`);
+			const response = await fetch(`https://api.guildwars2.com/v2${endpoint}?ids=${chunk.join(',')}&lang=en`);
 			const chunkItems = await response.json();
 			items.push(...chunkItems);
 			
@@ -285,4 +285,5 @@ async function processBananas(transactions) {
 
 	// console.log("Oggetti trovati: ", items);
 	return Array.from(map.values());
+
 }
