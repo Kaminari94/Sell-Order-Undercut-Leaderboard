@@ -1,0 +1,4 @@
+.theme-transition,
+.theme-transition * {
+    transition: all 2s ease !important;
+}
