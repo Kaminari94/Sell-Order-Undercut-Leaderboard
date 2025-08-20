@@ -218,28 +218,28 @@ async function processBananas(transactions) {
 		let name = "";
 		switch(rarity) {
 			case "Junk":
-				name = '<span style="color: #AAAAAA">' + item[0].name + '</span>';
+				name = '<span style="color: #AAAAAA"><b>' + item[0].name + '</b></span>';
 				break;
 			case "Basic":
-				name = '<span style="color: #000000">' + item[0].name + '</span>';
+				name = '<span style="color: #000000"><b>' + item[0].name + '</b></span>';
 				break;
 			case "Fine":
-				name = '<span style="color: #62A4DA">' + item[0].name + '</span>';
+				name = '<span style="color: #62A4DA"><b>' + item[0].name + '</b></span>';
 				break;
 			case "Masterwork":
-				name = '<span style="color: #1a9306">' + item[0].name + '</span>';
+				name = '<span style="color: #1a9306"><b>' + item[0].name + '</b></span>';
 				break;
 			case "Rare":
-				name = '<span style="color: #fcd00b">' + item[0].name + '</span>';
+				name = '<span style="color: #fcd00b"><b>' + item[0].name + '</b></span>';
 				break;
 			case "Exotic":
-				name = '<span style="color: #ffa405">' + item[0].name + '</span>';
+				name = '<span style="color: #ffa405"><b>' + item[0].name + '</b></span>';
 				break;
 			case "Ascended":
-				name = '<span style="color: #fb3e8d">' + item[0].name + '</span>';
+				name = '<span style="color: #fb3e8d"><b>' + item[0].name + '</b></span>';
 				break;
 			case "Legendary":
-				name = '<span style="color: #4C139D">' + item[0].name + '</span>';
+				name = '<span style="color: #4C139D"><b>' + item[0].name + '</b></span>';
 				break;
 			default:
 				name = '' + item[0].name + '';
@@ -287,3 +287,4 @@ async function processBananas(transactions) {
 	return Array.from(map.values());
 
 }
+
