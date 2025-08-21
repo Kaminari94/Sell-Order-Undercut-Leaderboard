@@ -7,6 +7,7 @@ const progressFlavorText = $('#progressFlavorText');
 const progressBar = $('#progressBar')
 const progressParent = progressBar.parent();
 const progressParentWidth = progressParent.width();
+
 $("#themeToggle").on("click", function(event) {
 	var tema = $('html').attr('data-bs-theme');
 	
@@ -20,7 +21,7 @@ $("#themeToggle").on("click", function(event) {
 	}
 	
 	setTimeout(function() {
-		$('html', 'body').removeClass('theme-transition');
+		$('html, body').removeClass('theme-transition');
 	}, 2000);
 	
 });
@@ -28,7 +29,6 @@ $("#themeToggle").on("click", function(event) {
 $('#formAPI').on('submit', async function (event) {
     event.preventDefault();
     var apiKey = $('#valueAPI').val();
-    
     submitBtn.prop('disabled', true);
     submitBtn.html('<i class="bi bi-arrow-repeat"></i> Loading...');
     
@@ -59,10 +59,10 @@ $('#formAPI').on('submit', async function (event) {
 		$('#myTable').DataTable( {
 			data: table,
 			columns: [
-				{ data: 'icon', title: 'Icon', width: '5%', render: function(data) {
+				{ data: 'icon', title: 'Icon', width: '7%', render: function(data) {
 					return '<img class="border border-secondary" src="' + data + '" height="48" width="48">';
 				}},
-				{ data: 'name', title: 'Name', width: '50%'},
+				{ data: 'name', title: 'Name', width: '48%'},
 				{ data: 'total_quantity', title: 'Quantity', width: '12.5%' },
 				{ data: 'price', title: 'Price', width: '20%', render: function(copperPrice) {
 					const gold = Math.floor(copperPrice / 10000);
@@ -84,8 +84,12 @@ $('#formAPI').on('submit', async function (event) {
 					targets: -1,
 					className: 'no-wrap'
 				}
-			]
+			],
+			layout: {
+				topStart: ['buttons', 'pageLength']
+			}
 		} );
+	
 		
 	} catch (error) {
         console.error('Error:', error);
