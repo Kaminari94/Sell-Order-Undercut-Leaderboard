@@ -58,12 +58,12 @@ $('#formAPI').on('submit', async function (event) {
 		$('#myTable').DataTable( {
 			data: table,
 			columns: [
-				{ data: 'icon', title: 'Icon', width: '10%', render: function(data) {
+				{ data: 'icon', title: 'Icon', width: '5%', render: function(data) {
 					return '<img class="border border-secondary" src="' + data + '" height="48" width="48">';
 				}},
 				{ data: 'name', title: 'Name', width: '50%'},
 				{ data: 'total_quantity', title: 'Quantity', width: '12.5%' },
-				{ data: 'price', title: 'Price', width: '15%', render: function(copperPrice) {
+				{ data: 'price', title: 'Price', width: '20%', render: function(copperPrice) {
 					const gold = Math.floor(copperPrice / 10000);
 					let silver = Math.floor((copperPrice % 10000) / 100).toString().padStart(2, '0');
 					let copper = (copperPrice % 100).toString().padStart(2, '0');
@@ -287,6 +287,7 @@ async function processBananas(transactions) {
 	return Array.from(map.values());
 
 }
+
 
 
 
