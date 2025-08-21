@@ -83,3 +83,7 @@ This project is provided as-is for the Guild Wars 2 community.
 ## Disclaimer
 
 This tool is not affiliated with or endorsed by ArenaNet or Guild Wars 2.
+
+## Special Thanks
+
+- **Rotsono**: the genius mind behind this app idea. Plus helping with testing and debugging, giving new ideas and general help. Thanks 💚
