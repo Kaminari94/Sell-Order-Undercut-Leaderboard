@@ -38,6 +38,7 @@ $('#formAPI').on('submit', async function (event) {
 		//console.log(result);
 		//console.log(table);
         if ($.fn.DataTable.isDataTable('#myTable')) {
+			$('#myTable').addClass('visually-hidden');
             $('#myTable').DataTable().destroy();
             $('#myTable').empty();
         }
@@ -77,6 +78,12 @@ $('#formAPI').on('submit', async function (event) {
 					return gold + '<img src="gold.png">' + silver + '<img src="silver.png">' + copper + '<img src="copper.png">';
 				}},
 				{ data: 'undercuts', title: 'Undercuts', width: '12.5%' }
+			],
+			columnDefs: [
+				{
+					targets: -1,
+					className: 'no-wrap'
+				}
 			]
 		} );
 		
@@ -218,28 +225,28 @@ async function processBananas(transactions) {
 		let name = "";
 		switch(rarity) {
 			case "Junk":
-				name = '<span class="h5" style="color: #AAAAAA"><b>' + item[0].name + '</b></span>';
+				name = '<span class="h4" style="color: #AAAAAA">' + item[0].name + '</span>';
 				break;
 			case "Basic":
-				name = '<span class="h5"><b>' + item[0].name + '</b></span>';
+				name = '<span class="h4">' + item[0].name + '</span>';
 				break;
 			case "Fine":
-				name = '<span class="h5" style="color: #62A4DA">' + item[0].name + '</span>';
+				name = '<span class="h4" style="color: #62A4DA">' + item[0].name + '</span>';
 				break;
 			case "Masterwork":
-				name = '<span class="h5" style="color: #1a9306">' + item[0].name + '</span>';
+				name = '<span class="h4" style="color: #1a9306">' + item[0].name + '</span>';
 				break;
 			case "Rare":
-				name = '<span class="h5" style="color: #fcd00b">' + item[0].name + '</span>';
+				name = '<span class="h4" style="color: #fcd00b">' + item[0].name + '</span>';
 				break;
 			case "Exotic":
-				name = '<span class="h5" style="color: #ffa405">' + item[0].name + '</span>';
+				name = '<span class="h4" style="color: #ffa405">' + item[0].name + '</span>';
 				break;
 			case "Ascended":
-				name = '<span class="h5" style="color: #fb3e8d">' + item[0].name + '</span>';
+				name = '<span class="h4" style="color: #fb3e8d">' + item[0].name + '</span>';
 				break;
 			case "Legendary":
-				name = '<span class="h5" style="color: #4C139D">' + item[0].name + '</span>';
+				name = '<span class="h4" style="color: #6D1BE0">' + item[0].name + '</span>';
 				break;
 			default:
 				name = '' + item[0].name + '';
