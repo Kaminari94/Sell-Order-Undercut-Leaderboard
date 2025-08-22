@@ -1,4 +1,16 @@
-.theme-transition,
-.theme-transition * {
+.theme-transition {
     transition: all 2s ease !important;
+    opacity: 1;
+    max-height: 100px;
+    overflow: hidden;
+}
+
+.theme-transition.hiding {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    border: 0;
+    pointer-events: none;
 }

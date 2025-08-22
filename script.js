@@ -1,5 +1,6 @@
 const form = $('#formAPI');
 const submitBtn = $('#formSubmit');
+const inputAPI = $('#valueAPI')
 const messageAlert = $('#messageAlert');
 const resultDiv = $('#result');
 const progressDiv = $('#progressBarDiv');
@@ -7,6 +8,8 @@ const progressFlavorText = $('#progressFlavorText');
 const progressBar = $('#progressBar')
 const progressParent = progressBar.parent();
 const progressParentWidth = progressParent.width();
+const storageName = "gw2_kami_trading_app";
+const dataTable = $('#myTable');
 
 $("#themeToggle").on("click", function(event) {
 	var tema = $('html').attr('data-bs-theme');
@@ -26,6 +29,122 @@ $("#themeToggle").on("click", function(event) {
 	
 });
 
+function formatTimeDifference(isoString) {
+    const createdDate = new Date(isoString);
+    const now = new Date();
+    return now - createdDate; 
+}
+
+function saveToStorage(apiKey, tableData) {
+    const storageData = {
+        apiKey: apiKey,
+        table: tableData,
+        timestamp: new Date().toISOString()
+    };
+    
+    try {
+        localStorage.setItem(storageName, JSON.stringify(storageData));
+        console.log("Data saved to localStorage");
+		messageAlert.addClass('alert-success');
+		messageAlert.removeClass('visually-hidden');
+		messageAlert.html(`<div class="d-flex"><div class="flex-fill">Data saved to local storage.</div><div class="flex-fill text-end"><img src="poggies.png" height="48" width="48"></div></div>`);
+		messageAlert.addClass("theme-transition");
+		setTimeout(function() {
+			messageAlert.addClass('visually-hidden');
+			messageAlert.removeClass('theme-transition', 'alert-secondary');
+		}, 6000);
+	} catch (e) {
+		messageAlert.addClass('alert-danger');
+		messageAlert.removeClass('visually-hidden');
+		messageAlert.html(`<div class="d-flex"><div class="flex-fill">Error while saving data: ${e}</div><div class="flex-fill text-end"><img src="sadge.png" height="48" width="48"></div></div>`);
+		messageAlert.addClass("theme-transition");
+		setTimeout(function() {
+			messageAlert.addClass('visually-hidden');
+			messageAlert.removeClass('theme-transition', 'alert-secondary');
+		}, 6000);
+	}
+}
+
+function loadFromStorage() {
+    try {
+        const data = localStorage.getItem(storageName);
+		if (data) {
+			messageAlert.addClass('alert-success');
+			messageAlert.removeClass('visually-hidden');
+			messageAlert.html(`<div class="d-flex"><div class="flex-fill">Data loaded from local storage.</div><div class="flex-fill text-end"><img src="rotsosilk.png" height="48" width="48"></div></div>`);
+			messageAlert.addClass("theme-transition");
+			setTimeout(function() {
+				messageAlert.addClass('visually-hidden');
+				messageAlert.removeClass('theme-transition', 'alert-secondary');
+			}, 6000);
+			return data ? JSON.parse(data) : null;
+		}
+    } catch (e) {
+		messageAlert.addClass('alert-danger');
+		messageAlert.removeClass('visually-hidden');
+		messageAlert.html(`<div class="d-flex"><div class="flex-fill">Error while loading data: ${e}</div><div class="flex-fill text-end"><img src="sadge.png" height="48" width="48"></div></div>`);
+		messageAlert.addClass("theme-transition");
+		setTimeout(function() {
+			messageAlert.addClass('visually-hidden');
+			messageAlert.removeClass('theme-transition', 'alert-secondary');
+		}, 6000);
+		return null;
+	}
+}
+
+function deleteStorage() {
+	try {
+		localStorage.removeItem(storageName);
+		console.log("Storage data deleted.");
+		messageAlert.addClass('alert-success');
+		messageAlert.removeClass('visually-hidden');
+		messageAlert.html(`<div class="d-flex"><div class="flex-fill">Data deleted from local storage.</div><div class="flex-fill text-end"><img src="dreamge.png" height="48" width="48"></div></div>`);
+		messageAlert.addClass("theme-transition");
+		setTimeout(function() {
+			messageAlert.addClass('visually-hidden');
+			messageAlert.removeClass('theme-transition', 'alert-secondary');
+		}, 6000);
+    } catch (e) {
+		messageAlert.addClass('alert-danger');
+		messageAlert.removeClass('visually-hidden');
+		messageAlert.html(`<div class="d-flex"><div class="flex-fill">Error while deleting data: ${e}</div><div class="flex-fill text-end"><img src="sadge.png" height="48" width="48"></div></div>`);
+		messageAlert.addClass("theme-transition");
+		setTimeout(function() {
+			messageAlert.addClass('visually-hidden');
+			messageAlert.removeClass('theme-transition', 'alert-secondary');
+		}, 6000);
+	}
+}
+
+$(document).ready(function() {
+        const oldData = loadFromStorage();
+		messageAlert.addClass('visually-hidden');
+        if (oldData && oldData.apiKey) {
+            $('#valueAPI').val(oldData.apiKey);
+        }
+    });
+
+$('#loadData').on('click', async function() {
+	data = loadFromStorage();
+	console.log(data);
+})
+
+$('#saveData').on('click', async function() {
+	var table = dataTable.DataTable().data().toArray();
+	var apiKey = inputAPI.val();
+	saveToStorage(apiKey, table);
+	console.log(table);
+})
+
+$('#deleteData').on('click', async function() {
+	const data = localStorage.getItem(storageName);
+	if (data) {
+		deleteStorage();
+		console.log("Data from local storage deleted.");
+	}
+	return null;
+})
+
 $('#formAPI').on('submit', async function (event) {
     event.preventDefault();
     var apiKey = $('#valueAPI').val();
@@ -36,7 +155,7 @@ $('#formAPI').on('submit', async function (event) {
         const result = await fetchMonkeys(apiKey);
 		const table = await processBananas(result);
 		//console.log(result);
-		//console.log(table);
+		console.log(table);
         if ($.fn.DataTable.isDataTable('#myTable')) {
 			$('#myTable').addClass('visually-hidden');
             $('#myTable').DataTable().destroy();
@@ -62,8 +181,38 @@ $('#formAPI').on('submit', async function (event) {
 				{ data: 'icon', title: 'Icon', width: '7%', render: function(data) {
 					return '<img class="border border-secondary" src="' + data + '" height="48" width="48">';
 				}},
-				{ data: 'name', title: 'Name', width: '48%'},
+				{ data: 'name', title: 'Name', width: '38%'},
 				{ data: 'total_quantity', title: 'Quantity', width: '12.5%' },
+				{ data: 'up_since', visible: false },
+				{ data: 'up_since', title: 'Up Since', type:'num', className: 'dt-right', width: '15%', render: function(isoString) {
+					millisec = formatTimeDifference(isoString);
+					const timeUnits = [
+						{ unit: 'year', ms: 31536000000, max: 100 },
+						{ unit: 'month', ms: 2628000000, max: 12 },
+						{ unit: 'week', ms: 604800000, max: 4 },
+						{ unit: 'day', ms: 86400000, max: 7 },
+						{ unit: 'hour', ms: 3600000, max: 24 },
+						{ unit: 'minute', ms: 60000, max: 60 },
+						{ unit: 'second', ms: 1000, max: 60 }
+					];
+					const parts = [];
+					let remainingMs = millisec;
+					
+					if (millisec < 0) return 'in the future';
+					
+					for (const { unit, ms, max } of timeUnits) {
+						const value = Math.floor(remainingMs / ms);
+						if (value > 0) {
+							parts.push(`${value}${unit[0]}`);
+							remainingMs -= value * ms;
+							
+							// Optional: stop after 2-3 components for readability
+							// if (parts.length >= 2) break;
+						}
+					}
+					
+					return parts.join(' ') || 'just now';
+				}},
 				{ data: 'price', title: 'Price', width: '20%', render: function(copperPrice) {
 					const gold = Math.floor(copperPrice / 10000);
 					let silver = Math.floor((copperPrice % 10000) / 100).toString().padStart(2, '0');
@@ -77,8 +226,10 @@ $('#formAPI').on('submit', async function (event) {
 					}
 					return gold + '<img src="gold.png">' + silver + '<img src="silver.png">' + copper + '<img src="copper.png">';
 				}},
+				{ data: 'delta', title: 'Δ', width: '5%' },
 				{ data: 'undercuts', title: 'Undercuts', width: '12.5%' }
 			],
+			order: [6, 'asc'], //Undercuts, ascending, from zero to heroooooooo
 			columnDefs: [
 				{
 					targets: -1,
@@ -89,7 +240,7 @@ $('#formAPI').on('submit', async function (event) {
 				topStart: ['buttons', 'pageLength']
 			}
 		} );
-	
+		saveToStorage(apiKey, table);
 		
 	} catch (error) {
         console.error('Error:', error);
@@ -167,7 +318,7 @@ async function fetchMonkeys(apiKey) {
             progressBar.css('width', percentage + '%');
             progressFlavorText.html(`<div class="d-flex"><div class="flex-fill"><b>Batch ${(currentProgress / CONCURRENT_REQUESTS).toFixed(0)} of ${(total_pages / CONCURRENT_REQUESTS).toFixed(0)}:</b> Fetching Data from cute Quaggans Delivery Service API, this may take some time.</div><div class="flex-fill text-end"><img src="waitge.gif" height="48" width="48"></div></div>`);
 		}
-	
+		
 		progressFlavorText.removeClass('alert-secondary');
 		progressBar.addClass('bg-success');
 		progressFlavorText.addClass('alert-success');
@@ -183,7 +334,6 @@ async function fetchMonkeys(apiKey) {
 async function processBananas(transactions) {
 	var apiKey = $('#valueAPI').val();
 	const id_art = [...new Set(transactions.map(t => t.item_id))];
-
 	const endpoint = '/items';
 	const endpoint_listings = '/commerce/listings';
 	const chunkSize = 200;
@@ -191,7 +341,7 @@ async function processBananas(transactions) {
     for (let i = 0; i < id_art.length; i += chunkSize) {
         chunks.push(id_art.slice(i, i + chunkSize));
     }
-
+	
 	const items = [];
 	const listings = [];
 	
@@ -220,13 +370,20 @@ async function processBananas(transactions) {
 		}
 	}
 	const map = new Map();
-    
+    var old_data = loadFromStorage();
     transactions.forEach(transaction => {
         const key = `${transaction.item_id}-${transaction.price}`;
         let item = items.filter(d => d.id === transaction.item_id);
 		let icon = item[0].icon;
 		let rarity = item[0].rarity;
 		let name = "";
+		
+		if (old_data) {
+			var old_item = old_data.table.filter(d => (d.item_id === transaction.item_id) && (d.price === transaction.price));
+		} else {
+			old_item = null;
+		}
+		let up_since = transaction.created;
 		switch(rarity) {
 			case "Junk":
 				name = '<span class="h4" style="color: #AAAAAA">' + item[0].name + '</span>';
@@ -257,11 +414,14 @@ async function processBananas(transactions) {
 				break;
 		}
 		let listing = listings.filter(d => d.id === transaction.item_id);
-		//console.log(listings);
-		
-		
+		let delta = 0;
 		if (listing.length > 0) {
 			var undercut = 0;
+			if (old_data) {
+				var old_undercut = old_item[0].undercuts;
+			} else {
+				var old_undercut = 0;
+			}
 			const sortedSells = listing[0].sells.sort((a, b) => a.unit_price - b.unit_price);
 			//console.log("sortedSells:" + JSON.stringify(sortedSells));
 			for (const sell of sortedSells) {
@@ -273,6 +433,15 @@ async function processBananas(transactions) {
 					break;
 				}
 			}
+
+			if (old_undercut > undercut) {
+				delta = `<span class="text-success">${undercut - old_undercut}</span> <i class="bi bi-arrow-up-circle text-success"></i>`;
+			} else if (old_undercut < undercut ) {
+				delta = `<span class="text-danger">+${undercut - old_undercut}</span> <i class="bi bi-arrow-down-circle text-danger"></i>`;
+			} else {
+				delta = `<span class="text-secondary">0</span> <i class="bi bi-dash-circle text-secondary"></i>`;
+				
+			}
 		}
 		
         if (!map.has(key)) {
@@ -281,8 +450,10 @@ async function processBananas(transactions) {
                 item_id: transaction.item_id,
 				name: name,
 				rarity: rarity,
+				up_since: up_since, //NUOVO
                 price: transaction.price,
                 total_quantity: 0,
+				delta: delta, //NUOVO
 				undercuts: undercut,
                 transactions: []
             });
