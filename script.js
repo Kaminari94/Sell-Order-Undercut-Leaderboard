@@ -133,7 +133,7 @@ $('#saveData').on('click', async function() {
 	var table = dataTable.DataTable().data().toArray();
 	var apiKey = inputAPI.val();
 	saveToStorage(apiKey, table);
-	console.log(table);
+	//console.log(table);
 })
 
 $('#deleteData').on('click', async function() {
@@ -182,22 +182,20 @@ $('#formAPI').on('submit', async function (event) {
 					return '<img class="border border-secondary" src="' + data + '" height="48" width="48">';
 				}},
 				{ data: 'name', title: 'Name', width: '38%'},
-				{ data: 'total_quantity', title: 'Quantity', width: '12.5%' },
-				{ data: 'up_since', visible: false },
-				{ data: 'up_since', title: 'Up Since', type:'num', className: 'dt-right', width: '15%', render: function(isoString) {
+				{ data: 'total_quantity', title: 'Quantity', width: '10.5%' },
+				{ data: 'up_since', title: 'Since', type:'num', className: 'dt-right', width: '7%', render: function(isoString) {
 					millisec = formatTimeDifference(isoString);
 					const timeUnits = [
-						{ unit: 'year', ms: 31536000000, max: 100 },
-						{ unit: 'month', ms: 2628000000, max: 12 },
-						{ unit: 'week', ms: 604800000, max: 4 },
-						{ unit: 'day', ms: 86400000, max: 7 },
-						{ unit: 'hour', ms: 3600000, max: 24 },
-						{ unit: 'minute', ms: 60000, max: 60 },
-						{ unit: 'second', ms: 1000, max: 60 }
+						{ unit: 'Year', ms: 31536000000, max: 100 },
+						{ unit: 'Month', ms: 2628000000, max: 12 },
+						{ unit: 'Week', ms: 604800000, max: 4 },
+						{ unit: 'Day', ms: 86400000, max: 7 },
+						{ unit: 'Hour', ms: 3600000, max: 24 },
+						{ unit: 'Minute', ms: 60000, max: 60 },
+						{ unit: 'Second', ms: 1000, max: 60 }
 					];
 					const parts = [];
 					let remainingMs = millisec;
-					
 					if (millisec < 0) return 'in the future';
 					
 					for (const { unit, ms, max } of timeUnits) {
@@ -207,13 +205,13 @@ $('#formAPI').on('submit', async function (event) {
 							remainingMs -= value * ms;
 							
 							// Optional: stop after 2-3 components for readability
-							// if (parts.length >= 2) break;
+							if (parts.length >= 1) break;
 						}
 					}
 					
 					return parts.join(' ') || 'just now';
 				}},
-				{ data: 'price', title: 'Price', width: '20%', render: function(copperPrice) {
+				{ data: 'price', title: 'Price', width: '18%', render: function(copperPrice) {
 					const gold = Math.floor(copperPrice / 10000);
 					let silver = Math.floor((copperPrice % 10000) / 100).toString().padStart(2, '0');
 					let copper = (copperPrice % 100).toString().padStart(2, '0');
@@ -226,8 +224,19 @@ $('#formAPI').on('submit', async function (event) {
 					}
 					return gold + '<img src="gold.png">' + silver + '<img src="silver.png">' + copper + '<img src="copper.png">';
 				}},
-				{ data: 'delta', title: 'Δ', width: '5%' },
-				{ data: 'undercuts', title: 'Undercuts', width: '12.5%' }
+				{ data: 'delta', title: 'Δ', width: '9%', render: function(delta) {
+					let direction = delta.direction;
+					delta = delta.delta;
+					if (direction) {
+						delta = `<span class="text-success">${delta}</span> <i class="bi bi-arrow-up-circle text-success"></i>`;
+					} else if (direction === false) {
+						delta = `<span class="text-danger">+${delta}</span> <i class="bi bi-arrow-down-circle text-danger"></i>`;
+					} else if (direction === null) {
+						delta = `<span class="text-secondary">0</span> <i class="bi bi-dash-circle text-secondary"></i>`;
+					}
+					return delta;
+				} },
+				{ data: 'undercuts', title: 'Undercuts', width: '10.5%' }
 			],
 			order: [6, 'asc'], //Undercuts, ascending, from zero to heroooooooo
 			columnDefs: [
@@ -378,10 +387,10 @@ async function processBananas(transactions) {
 		let rarity = item[0].rarity;
 		let name = "";
 		
-		if (old_data) {
+		if (old_data && (apiKey === old_data.apiKey)) {
 			var old_item = old_data.table.filter(d => (d.item_id === transaction.item_id) && (d.price === transaction.price));
 		} else {
-			old_item = null;
+			old_item = [ {'undercuts': 0} ];
 		}
 		let up_since = transaction.created;
 		switch(rarity) {
@@ -433,14 +442,16 @@ async function processBananas(transactions) {
 					break;
 				}
 			}
-
+			var direction = true;
 			if (old_undercut > undercut) {
-				delta = `<span class="text-success">${undercut - old_undercut}</span> <i class="bi bi-arrow-up-circle text-success"></i>`;
+				direction = true; //true = up | false = down | null = no change
+				delta = undercut - old_undercut;
 			} else if (old_undercut < undercut ) {
-				delta = `<span class="text-danger">+${undercut - old_undercut}</span> <i class="bi bi-arrow-down-circle text-danger"></i>`;
+				direction = false; //true = up | false = down | null = no change
+				delta = undercut - old_undercut;
 			} else {
-				delta = `<span class="text-secondary">0</span> <i class="bi bi-dash-circle text-secondary"></i>`;
-				
+				direction = null; //true = up | false = down | null = no change
+				delta = 0;
 			}
 		}
 		
@@ -453,7 +464,7 @@ async function processBananas(transactions) {
 				up_since: up_since, //NUOVO
                 price: transaction.price,
                 total_quantity: 0,
-				delta: delta, //NUOVO
+				delta: {'direction':direction, 'delta':delta}, //NUOVO
 				undercuts: undercut,
                 transactions: []
             });
