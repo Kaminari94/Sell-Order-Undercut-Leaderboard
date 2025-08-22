@@ -3,6 +3,7 @@
 A lightweight web application for Guild Wars 2 traders which analyzes sell orders, identifying undercut competition in the trading post.
 
 [Try it now!](https://kaminari94.github.io/Sell-Order-Undercut-Leaderboard/)
+
 If you want to just try it and have no API, use mine:
 D7A6C243-7284-354C-868F-29C049C97D4CCB139372-8E4F-443D-B38A-2D3EABD400EA
 
