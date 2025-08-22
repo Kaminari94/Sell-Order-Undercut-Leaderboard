@@ -1,7 +1,6 @@
 .theme-transition {
     transition: all 2s ease !important;
     opacity: 1;
-    max-height: 100px;
     overflow: hidden;
 }
 
@@ -13,4 +12,5 @@
     margin: 0;
     border: 0;
     pointer-events: none;
+
 }
