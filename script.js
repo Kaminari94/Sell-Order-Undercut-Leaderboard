@@ -177,13 +177,14 @@ $('#formAPI').on('submit', async function (event) {
 		$('#myTable').removeClass('visually-hidden');
 		$('#myTable').DataTable( {
 			data: table,
+			responsive: true,
 			columns: [
-				{ data: 'icon', title: 'Icon', width: '7%', render: function(data) {
-					return '<img class="border border-secondary" src="' + data + '" height="48" width="48">';
+				{ data: 'icon', title: '<span class="d-lg-none"><i class="bi bi-image"></i></span><span class="d-none d-lg-inline"><i class="bi bi-image"></i> Icon</span>', width: '7%', render: function(data) {
+					return '<img class="d-lg-none border border-secondary" src="' + data + '" height="32" width="32">' + '<img class="d-none d-lg-inline border border-secondary" src="' + data + '" height="48" width="48">';
 				}},
-				{ data: 'name', title: 'Name', width: '38%'},
-				{ data: 'total_quantity', title: 'Quantity', width: '10.5%' },
-				{ data: 'up_since', title: 'Since', type:'num', className: 'dt-right', width: '7%', render: function(isoString) {
+				{ data: 'name', title: '<span class="d-lg-none"><i class="bi bi-quote"></i><span class="fs-6">Name</span></span><span class="d-none d-lg-inline"><i class="bi bi-quote"></i> Name</span>', width: '30%' },
+				{ data: 'total_quantity', title: '<span class="d-lg-none"><i class="bi bi-box-seam"></i></span><span class="d-none d-lg-inline"><i class="bi bi-box-seam"></i> Q.ty</span>', width: '10.5%' },
+				{ data: 'up_since', title: '<span class="d-lg-none"><i class="bi bi-calendar-date"></i></span><span class="d-none d-lg-inline"><i class="bi bi-calendar-date"></i> Since</span>', type:'num', className: 'dt-right', width: '9.66%', render: function(isoString) {
 					millisec = formatTimeDifference(isoString);
 					const timeUnits = [
 						{ unit: 'Year', ms: 31536000000, max: 100 },
@@ -211,19 +212,19 @@ $('#formAPI').on('submit', async function (event) {
 					
 					return parts.join(' ') || 'just now';
 				}},
-				{ data: 'price', title: 'Price', width: '18%', render: function(copperPrice) {
+				{ data: 'price', title: '<span class="d-lg-none"><i class="bi bi-cash-coin"></i></span><span class="d-none d-lg-inline"><i class="bi bi-cash-coin"></i> Price</span>', width: '20.66%', render: function(copperPrice) {
 					const gold = Math.floor(copperPrice / 10000);
 					let silver = Math.floor((copperPrice % 10000) / 100).toString().padStart(2, '0');
 					let copper = (copperPrice % 100).toString().padStart(2, '0');
 					
 					if (gold === 0) {
 						if (silver === "00") {
-							return copper + '<img src="copper.png">';
+							return copper + '<img class="d-none d-lg-inline" src="copper.png"><img class="d-lg-none" src="copper.png" height="16" width="16">';
 						}
-						return silver + '<img src="silver.png">' + copper + '<img src="copper.png">';
+						return silver + '<img class="d-none d-lg-inline" img src="silver.png"><img class="d-lg-none" src="silver.png" height="16" width="16">' + copper + '<img class="d-none d-lg-inline" src="copper.png"><img class="d-lg-none" src="copper.png" height="16" width="16">';
 					}
-					return gold + '<img src="gold.png">' + silver + '<img src="silver.png">' + copper + '<img src="copper.png">';
-				}},
+					return gold + '<img class="d-none d-lg-inline" src="gold.png"><img class="d-lg-none" src="gold.png" height="16" width="16">' + silver + '<img class="d-none d-lg-inline" img src="silver.png"><img class="d-lg-none" src="silver.png" height="16" width="16">' + copper + '<img class="d-none d-lg-inline" src="copper.png"><img class="d-lg-none" src="copper.png" height="16" width="16">';
+				}}, //d-lg-none e d-none d-lg-inline
 				{ data: 'delta', title: 'Δ', width: '9%', render: function(delta) {
 					let direction = delta.direction;
 					delta = delta.delta;
@@ -236,8 +237,8 @@ $('#formAPI').on('submit', async function (event) {
 					}
 					return delta;
 				} },
-				{ data: 'undercuts', title: 'Undercuts', width: '10.5%' }
-			],
+				{ data: 'undercuts', title: '<span class="d-lg-none"><i class="bi bi-layer-forward"></i></span><span class="d-none d-lg-inline"><i class="bi bi-layer-forward"></i> Undercuts</span>', width: '13.16%' }
+			], //<i class="bi bi-layer-forward"></i>
 			order: [6, 'asc'], //Undercuts, ascending, from zero to heroooooooo
 			columnDefs: [
 				{
@@ -393,30 +394,31 @@ async function processBananas(transactions) {
 			old_item = [ {'undercuts': 0} ];
 		}
 		let up_since = transaction.created;
+		// COLORS BY ITEM RARITY
 		switch(rarity) {
 			case "Junk":
-				name = '<span class="h4" style="color: #AAAAAA">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #AAAAAA">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #AAAAAA">' + item[0].name + '</span>';
 				break;
 			case "Basic":
-				name = '<span class="h4">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6">' + item[0].name + '</span><span class="d-none d-lg-flex h4">' + item[0].name + '</span>';
 				break;
 			case "Fine":
-				name = '<span class="h4" style="color: #62A4DA">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #62A4DA">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #62A4DA">' + item[0].name + '</span>';
 				break;
 			case "Masterwork":
-				name = '<span class="h4" style="color: #1a9306">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #1a9306">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #1a9306">' + item[0].name + '</span>';
 				break;
 			case "Rare":
-				name = '<span class="h4" style="color: #fcd00b">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #fcd00b">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #fcd00b">' + item[0].name + '</span>';
 				break;
 			case "Exotic":
-				name = '<span class="h4" style="color: #ffa405">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #ffa405">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #ffa405">' + item[0].name + '</span>';
 				break;
 			case "Ascended":
-				name = '<span class="h4" style="color: #fb3e8d">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #fb3e8d">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #fb3e8d">' + item[0].name + '</span>';
 				break;
 			case "Legendary":
-				name = '<span class="h4" style="color: #6D1BE0">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #6D1BE0">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #6D1BE0">' + item[0].name + '</span>';
 				break;
 			default:
 				name = '' + item[0].name + '';
