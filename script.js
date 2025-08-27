@@ -397,17 +397,39 @@ async function processBananas(transactions) {
 			console.error('Error fetching listings:', error);
 		}
 	}
+	
+	const itemsMap = new Map();
+    for (const item of items) {
+        itemsMap.set(item.id, item);
+    }
+
+    const listingsMap = new Map();
+    for (const listing of listings) {
+        listingsMap.set(listing.id, listing);
+    }
 	const map = new Map();
     var old_data = loadFromStorage();
-    transactions.forEach(transaction => {
+	
+	const oldDataMap = new Map();
+    if (old_data && (apiKey === old_data.apiKey)) {
+        for (const oldItem of old_data.table) {
+            const oldKey = `${oldItem.item_id}-${oldItem.price}`;
+            oldDataMap.set(oldKey, oldItem);
+        }
+    }
+    for (const transaction of transactions) {
         const key = `${transaction.item_id}-${transaction.price}`;
-        let item = items.filter(d => d.id === transaction.item_id);
-		let icon = item[0].icon;
-		let rarity = item[0].rarity;
+        let item = itemsMap.get(transaction.item_id);
+		if (!item) {
+            console.warn(`Item with id ${transaction.item_id} not found.`);
+            continue;
+        }
+		let icon = item.icon;
+		let rarity = item.rarity;
 		let name = "";
 		
 		if (old_data && (apiKey === old_data.apiKey)) {
-			var old_item = old_data.table.filter(d => (d.item_id === transaction.item_id) && (d.price === transaction.price));
+			let old_item = oldDataMap.get(key);
 		} else {
 			old_item = [ {'undercuts': 0} ];
 		}
@@ -415,43 +437,43 @@ async function processBananas(transactions) {
 		// COLORS BY ITEM RARITY
 		switch(rarity) {
 			case "Junk":
-				name = '<span class="d-lg-none fs-6" style="color: #AAAAAA">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #AAAAAA">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #AAAAAA">' + item.name + '</span><span class="d-none d-lg-flex h4" style="color: #AAAAAA">' + item.name + '</span>';
 				break;
 			case "Basic":
-				name = '<span class="d-lg-none fs-6">' + item[0].name + '</span><span class="d-none d-lg-flex h4">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6">' + item.name + '</span><span class="d-none d-lg-flex h4">' + item.name + '</span>';
 				break;
 			case "Fine":
-				name = '<span class="d-lg-none fs-6" style="color: #62A4DA">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #62A4DA">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #62A4DA">' + item.name + '</span><span class="d-none d-lg-flex h4" style="color: #62A4DA">' + item.name + '</span>';
 				break;
 			case "Masterwork":
-				name = '<span class="d-lg-none fs-6" style="color: #1a9306">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #1a9306">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #1a9306">' + item.name + '</span><span class="d-none d-lg-flex h4" style="color: #1a9306">' + item.name + '</span>';
 				break;
 			case "Rare":
-				name = '<span class="d-lg-none fs-6" style="color: #fcd00b">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #fcd00b">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #fcd00b">' + item.name + '</span><span class="d-none d-lg-flex h4" style="color: #fcd00b">' + item.name + '</span>';
 				break;
 			case "Exotic":
-				name = '<span class="d-lg-none fs-6" style="color: #ffa405">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #ffa405">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #ffa405">' + item.name + '</span><span class="d-none d-lg-flex h4" style="color: #ffa405">' + item.name + '</span>';
 				break;
 			case "Ascended":
-				name = '<span class="d-lg-none fs-6" style="color: #fb3e8d">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #fb3e8d">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #fb3e8d">' + item.name + '</span><span class="d-none d-lg-flex h4" style="color: #fb3e8d">' + item.name + '</span>';
 				break;
 			case "Legendary":
-				name = '<span class="d-lg-none fs-6" style="color: #6D1BE0">' + item[0].name + '</span><span class="d-none d-lg-flex h4" style="color: #6D1BE0">' + item[0].name + '</span>';
+				name = '<span class="d-lg-none fs-6" style="color: #6D1BE0">' + item.name + '</span><span class="d-none d-lg-flex h4" style="color: #6D1BE0">' + item.name + '</span>';
 				break;
 			default:
-				name = '' + item[0].name + '';
+				name = '' + item.name + '';
 				break;
 		}
-		let listing = listings.filter(d => d.id === transaction.item_id);
+		const listing = listingsMap.get(transaction.item_id);
 		let delta = 0;
-		if (listing.length > 0) {
-			var undercut = 0;
+		let undercut = 0;
+		if (listing) {
 			if (old_data) {
-				var old_undercut = old_item[0].undercuts;
+				var old_undercut = old_item.undercuts;
 			} else {
 				var old_undercut = 0;
 			}
-			const sortedSells = listing[0].sells.sort((a, b) => a.unit_price - b.unit_price);
+			const sortedSells = listing.sells.sort((a, b) => a.unit_price - b.unit_price);
 			//console.log("sortedSells:" + JSON.stringify(sortedSells));
 			for (const sell of sortedSells) {
 				if (sell.unit_price < transaction.price) {
@@ -486,14 +508,14 @@ async function processBananas(transactions) {
                 total_quantity: 0,
 				delta: {'direction':direction, 'delta':delta}, //NUOVO
 				undercuts: undercut,
-                transactions: []
+                //transactions: []
             });
         }
         
         const group = map.get(key);
         group.total_quantity += transaction.quantity;
-        group.transactions.push(transaction);
-    });
+        //group.transactions.push(transaction);
+    };
 	//console.log(map);
 
 	// console.log("Oggetti trovati: ", items);
