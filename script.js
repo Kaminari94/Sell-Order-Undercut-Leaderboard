@@ -11,6 +11,20 @@ const progressParentWidth = progressParent.width();
 const storageName = "gw2_kami_trading_app";
 const dataTable = $('#myTable');
 
+$(document).ready(function() {
+	if (window.innerWidth < 800) {
+		inputAPI.css('width', '70%');
+	}
+})
+
+window.addEventListener('resize', function(event) {
+	if (window.innerWidth >= 800) {
+		inputAPI.css('width', '100%');
+	} else if (window.innerWidth < 800) {
+		inputAPI.css('width', '70%');
+	}
+}) //Why? Because! Well, the above document.ready function does it for responsive design. If i resize browser to extremely small sizes then i will have an inputAPI textbox too big!
+
 $("#themeToggle").on("click", function(event) {
 	var tema = $('html').attr('data-bs-theme');
 	
@@ -155,7 +169,7 @@ $('#formAPI').on('submit', async function (event) {
         const result = await fetchMonkeys(apiKey);
 		const table = await processBananas(result);
 		//console.log(result);
-		console.log(table);
+		//console.log(table);
         if ($.fn.DataTable.isDataTable('#myTable')) {
 			$('#myTable').addClass('visually-hidden');
             $('#myTable').DataTable().destroy();
@@ -328,7 +342,11 @@ async function fetchMonkeys(apiKey) {
             progressBar.css('width', percentage + '%');
             progressFlavorText.html(`<div class="d-flex"><div class="flex-fill"><b>Batch ${(currentProgress / CONCURRENT_REQUESTS).toFixed(0)} of ${(total_pages / CONCURRENT_REQUESTS).toFixed(0)}:</b> Fetching Data from cute Quaggans Delivery Service API, this may take some time.</div><div class="flex-fill text-end"><img src="waitge.gif" height="48" width="48"></div></div>`);
 		}
-		
+		if (result.length === 0) {
+			progressBar.addClass('bg-success');
+			progressFlavorText.html(`<div class="d-flex"><div class="flex-fill"><b>${(result.length)} Listings</b> loaded successfully from Quaggans Delivery Service API.  Showing results...<br>Wait, what results? You have nothing for sale!</div><div class="flex-fill text-end"><img src="dogekek.png" height="48" width="48"></div></div>`)
+			return await result;
+		}
 		progressFlavorText.removeClass('alert-secondary');
 		progressBar.addClass('bg-success');
 		progressFlavorText.addClass('alert-success');
