@@ -428,11 +428,12 @@ async function processBananas(transactions) {
 		let rarity = item.rarity;
 		let name = "";
 		
-		if (old_data && (apiKey === old_data.apiKey)) {
-			let old_item = oldDataMap.get(key);
-		} else {
-			old_item = [ {'undercuts': 0} ];
-		}
+		let old_item = oldDataMap.get(key);
+        
+        if (!old_item) {
+            old_item = { 'undercuts': 0 };
+        }
+		
 		let up_since = transaction.created;
 		// COLORS BY ITEM RARITY
 		switch(rarity) {
