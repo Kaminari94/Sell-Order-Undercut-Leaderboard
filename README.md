@@ -69,8 +69,9 @@ Generate your API key at: [https://account.arena.net/applications](https://accou
 ## Privacy & Security
 
 - Your API key is used only for API requests to ArenaNet's servers.
-- No data is stored or transmitted to third parties.
+- No data is transmitted to third parties.
 - All processing happens locally in your browser.
+- Data is saved in the user's browser's Local Storage for user convenience and to facilitate delta comparisons.
 
 ## Support
 
