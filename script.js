@@ -140,7 +140,7 @@ $(document).ready(function() {
 
 $('#loadData').on('click', async function() {
 	data = loadFromStorage();
-	console.log(data);
+	//console.log(data);
 })
 
 $('#saveData').on('click', async function() {
@@ -523,6 +523,7 @@ async function processBananas(transactions) {
 	return Array.from(map.values());
 
 }
+
 
 
 
